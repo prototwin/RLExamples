@@ -29,13 +29,21 @@
 
 ---
 
-ProtoTwin is an online simulation software for robotics and industrial automation. This repository provides a set of examples that you can use with ProtoTwin Connect to train RL agents. To run any of these example models, you first need to create a ProtoTwin [account](https://prototwin.com/account/signup) and then download the ProtoTwin Connect desktop application. The application supports the following OS:
+ProtoTwin is an online simulation software for robotics and industrial automation. This repository provides a set of examples that you can use with ProtoTwin Connect to train RL agents. To run any of these example models, you will first need to create a ProtoTwin [account](https://prototwin.com/account/signup) and then download the ProtoTwin Connect desktop application. The application supports the following OS:
 
 - Windows 10/11 on x64 and Arm
 - MacOS on Apple Silicon
 - Linux on x64
 
-## Installation
+## Clone Repository
+
+Clone the repository by running the following command:
+
+```
+git clone https://github.com/prototwin/RLExamples.git
+```
+
+## Install Dependencies
 
 You need to install the following Python packages to run these examples:
 
