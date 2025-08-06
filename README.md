@@ -97,7 +97,7 @@ python bipedal.py
 
 Unitree Go2 quadruped robot tasked with performing a handstand.
 
-![Handstand](https://github.com/user-attachments/assets/6d6cad5f-826c-4385-8694-3a905b325127)
+<img src="https://github.com/user-attachments/assets/6d6cad5f-826c-4385-8694-3a905b325127" alt="Handstand" width="1000" />
 
 To train the handstand model you just need to run the following command:
 ```
@@ -109,7 +109,7 @@ python handstand.py
 
 uFactory xArm 6 robot tasked with continuously bouncing a ping pong ball.
 
-![PingPong](https://github.com/user-attachments/assets/b8773a11-5505-4754-8703-030c6b92b8ef)
+<img src="https://github.com/user-attachments/assets/b8773a11-5505-4754-8703-030c6b92b8ef" alt="PingPong" width="1000" />
 
 To train the pingpong model you just need to run the following command:
 ```
