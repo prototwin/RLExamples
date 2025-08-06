@@ -29,7 +29,7 @@
 
 ---
 
-ProtoTwin is an online simulation software for robotics and industrial automation. This repository provides a set of examples that you can use with ProtoTwin Connect to train RL agents. To run any of these example models, you will first need to create a ProtoTwin [account](https://prototwin.com/account/signup) and then download the ProtoTwin Connect desktop application. The application supports the following OS:
+ProtoTwin is an online simulation software for robotics and industrial automation. This repository provides a set of examples that you can use with ProtoTwin Connect to train RL agents. To run these example models, you will first need to create a ProtoTwin [account](https://prototwin.com/account/signup) and then download the ProtoTwin Connect desktop application. The following OS are supported:
 
 - Windows 10/11 on x64 and Arm
 - MacOS on Apple Silicon
@@ -45,7 +45,7 @@ git clone https://github.com/prototwin/RLExamples.git
 
 ## Install Dependencies
 
-You need to install the following Python packages to run these examples:
+You need to install the following Python packages:
 
 ```
 pip install prototwin-gymnasium
@@ -61,7 +61,7 @@ The [prototwin gymnasium package](https://pypi.org/project/prototwin-gymnasium/)
 
 ProtoTwin single inverted pendulum (cartpole) tasked with swinging the pole up and balancing it.
 
-![CartPoleV1](https://github.com/user-attachments/assets/ef6117c0-356e-498d-a78d-5cefa474f02e)
+<img src="https://github.com/user-attachments/assets/ef6117c0-356e-498d-a78d-5cefa474f02e" alt="CartPoleV1" width="1000" />
 
 To train the cartpole-v1 model you just need to run the following command:
 ```
@@ -73,7 +73,7 @@ python cartpole-v1.py
 
 ProtoTwin cartpole v2 has reduced acceleration in the cart and domain randomization compared to v1 (designed for sim-to-real).
 
-![CartPoleV2](https://github.com/user-attachments/assets/51b73b06-10ff-4ede-9715-a0372c095cc2)
+<img src="https://github.com/user-attachments/assets/51b73b06-10ff-4ede-9715-a0372c095cc2" alt="CartPoleV2" width="1000" />
 
 To train the cartpole-v2 model you just need to run the following command:
 ```
@@ -85,7 +85,7 @@ python cartpole-v2.py
 
 ProtoTwin bipedal robot tasked with walking forward.
 
-![Bipedal](https://github.com/user-attachments/assets/7c9b973f-2bd4-4dbb-8947-a962fb8ebf23)
+<img src="https://github.com/user-attachments/assets/7c9b973f-2bd4-4dbb-8947-a962fb8ebf23" alt="Bipedal" width="1000" />
 
 To train the bipedal model you just need to run the following command:
 ```
