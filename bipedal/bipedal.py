@@ -107,6 +107,12 @@ current_positions = [left_hip_motor_current_position, right_hip_motor_current_po
                      left_foot_motor_current_position, right_foot_motor_current_position,
                      back_neck_motor_current_position]
 
+current_velocities = [left_hip_motor_current_velocity, right_hip_motor_current_velocity,
+                      left_thigh_motor_current_velocity, right_thigh_motor_current_velocity,
+                      left_calf_motor_current_velocity, right_calf_motor_current_velocity,
+                      left_foot_motor_current_velocity, right_foot_motor_current_velocity,
+                      back_neck_motor_current_velocity]
+
 torques = [left_hip_motor_current_force, right_hip_motor_current_force,
            left_thigh_motor_current_force, right_thigh_motor_current_force,
            left_calf_motor_current_force, right_calf_motor_current_force,
@@ -123,6 +129,11 @@ states = [left_hip_motor_current_position, right_hip_motor_current_position,
           left_calf_motor_current_velocity, right_calf_motor_current_velocity,
           left_foot_motor_current_velocity, right_foot_motor_current_velocity,
           back_neck_motor_current_velocity,
+          left_hip_motor_current_force, right_hip_motor_current_force,
+          left_thigh_motor_current_force, right_thigh_motor_current_force,
+          left_calf_motor_current_force, right_calf_motor_current_force,
+          left_foot_motor_current_force, right_foot_motor_current_force,
+          back_neck_motor_current_force,
           body_orientation_sensor_x, body_orientation_sensor_y, body_orientation_sensor_z, body_orientation_sensor_w,
           body_linear_velocity_sensor_x, body_linear_velocity_sensor_y, body_linear_velocity_sensor_z,
           body_angular_velocity_sensor_x, body_angular_velocity_sensor_y, body_angular_velocity_sensor_z,
@@ -136,6 +147,7 @@ actions = [left_hip_motor_target_position, right_hip_motor_target_position,
            back_neck_motor_target_position]
 
 current_position_size = len(current_positions)
+current_velocity_size = len(current_velocities)
 torque_size = len(torques)
 state_size = len(states)
 action_size = len(actions)
@@ -148,33 +160,41 @@ class BipedalEnv(VecEnvInstance):
         self.duration = 20
         self.target_velocity = 0.5
         self.previous_action = [0] * action_size
-    
+        self.previous_joint_velocities = [0] * current_velocity_size
+
     def reward_forward_velocity(self):
         '''
         Reward the agent for moving with a forward velocity close to the target velocity
         '''
         diff = self.get(body_linear_velocity_sensor_z) - self.target_velocity
         return math.exp(-8 * diff * diff)
-    
+
+    def reward_linear_velocity_penalty(self):
+        '''
+        Penalize the agent for moving up and down
+        '''
+        vy = self.get(body_linear_velocity_sensor_y)
+        return vy * vy
+
     def reward_angular_velocity_penalty(self):
         '''
-        Penalize the agent for moving with a large angular velocity
+        Penalize the agent for moving with large angular velocities
         '''
         vx = self.get(body_angular_velocity_sensor_x)
         vy = self.get(body_angular_velocity_sensor_y)
         vz = self.get(body_angular_velocity_sensor_z)
         return vx * vx + vy * vy + vz * vz
-    
-    def reward_action_rate_penalty(self, action):
+
+    def reward_joint_acceleration_penalty(self, dt):
         '''
-        Penalize the agent for taking two very different actions
+        Penalize the agent for high accelerations in the joints
         '''
         penalty = 0
-        for i in range(action_size):
-            q = action[i] - self.previous_action[i]
-            penalty += q * q
-        return penalty / action_size
-    
+        for i in range(current_velocity_size):
+            acc = (self.get(current_velocities[i]) - self.previous_joint_velocities[i]) / dt
+            penalty += acc * acc
+        return penalty / current_velocity_size
+
     def reward_joint_torque_penalty(self):
         '''
         Penalize the agent for high torques in the joints
@@ -184,7 +204,7 @@ class BipedalEnv(VecEnvInstance):
             torque = self.get(torques[i])
             penalty += torque * torque
         return penalty / torque_size
-    
+
     def reward_joint_limit_penalty(self):
         '''
         Penalize the agent for joint angles being too close to the joint limits
@@ -199,51 +219,67 @@ class BipedalEnv(VecEnvInstance):
             fraction = distance / max_distance
             penalty += fraction * fraction * fraction * fraction * fraction
         return penalty / current_position_size
-    
+
+    def reward_up_axis_penalty(self):
+        '''
+        Penalize the agent for its up axis not pointing upwards
+        '''
+        x = self.get(body_orientation_sensor_x)
+        z = self.get(body_orientation_sensor_z)
+        x2 = x + x
+        z2 = z + z
+        xx2 = x * x2
+        zz2 = z * z2
+        up = 1.0 - xx2 - zz2
+        return math.acos(max(-1, min(1, up)))
+
+    def reward_forward_axis_penalty(self):
+        '''
+        Penalize the agent for its forward axis not pointing forwards
+        '''
+        x = self.get(body_orientation_sensor_x)
+        y = self.get(body_orientation_sensor_y)
+        x2 = x + x
+        y2 = y + y
+        xx2 = x * x2
+        yy2 = y * y2
+        forward = 1.0 - xx2 - yy2
+        return math.acos(max(-1, min(1, forward)))
+
     def reward_position_drift_penalty(self):
         '''
         Penalize the agent for positional drift
         '''
         return math.fabs(self.get(body_position_sensor_x))
-    
-    def reward_rotation_drift_penalty(self):
-        '''
-        Penalize the agent for rotational drift
-        '''
-        qx = self.get(body_orientation_sensor_x)
-        qy = self.get(body_orientation_sensor_y)
-        qz = self.get(body_orientation_sensor_z)
-        qw = self.get(body_orientation_sensor_w)
-        dot = np.dot([qx, qy, qz, qw], [0, 0, 0, 1])
-        arg = np.clip(2.0 * dot * dot - 1.0, -1.0, 1.0)
-        return np.arccos(arg) / np.pi
-    
+
     def reward(self):
         '''
         Reward function
         '''
         dt = 0.01
-
         reward = 0
         reward += self.reward_forward_velocity()
 
         penalty = 0
-        penalty += self.reward_angular_velocity_penalty() * 0.01
-        penalty += self.reward_action_rate_penalty(self.action) * 0.1
-        penalty += self.reward_joint_torque_penalty() * 0.002
-        penalty += self.reward_joint_limit_penalty() * 0.5
-        penalty += self.reward_position_drift_penalty() * 2.0
-        penalty += self.reward_rotation_drift_penalty() * 0.5
+        penalty += self.reward_linear_velocity_penalty()
+        penalty += self.reward_angular_velocity_penalty() * 0.1
+        penalty += self.reward_joint_acceleration_penalty(dt) * 0.001
+        penalty += self.reward_joint_torque_penalty() * 0.001
+        penalty += self.reward_joint_limit_penalty()
+        penalty += self.reward_up_axis_penalty()
+        penalty += self.reward_forward_axis_penalty()
+        penalty += self.reward_position_drift_penalty()
+        penalty /= 8 # Normalize by the number of penalty terms
         penalty *= min(1, reward)
 
         return (reward - penalty) * dt
-    
+
     def terminal(self):
         '''
         Whether the agent is in a terminal state
         '''
         return self.get(body_position_sensor_y) < -0.01 or math.fabs(self.get(body_position_sensor_x)) > 2
-    
+
     def observations(self):
         '''
         The current observations
@@ -255,11 +291,21 @@ class BipedalEnv(VecEnvInstance):
             obs[state_size + i] = self.previous_action[i]
         return np.array(obs)
 
+    def joint_velocities(self):
+        '''
+        The current velocities in the joints
+        '''
+        velocities = [0] * current_velocity_size
+        for i in range(current_velocity_size):
+            velocities[i] = self.get(current_velocities[i])
+        return velocities
+
     def reset(self, seed=None):
         super().reset(seed=seed)
         self.previous_action = [0] * action_size
+        self.previous_joint_velocities = [0] * current_velocity_size
         return self.observations(), {}
-    
+   
     def apply(self, action):
         self.action = action
         for i in range(action_size):
@@ -267,10 +313,11 @@ class BipedalEnv(VecEnvInstance):
 
     def step(self):
         obs = self.observations()
-        self.previous_action = self.action
         reward = self.reward()
         done = self.terminal()
         truncated = self.time > self.duration
+        self.previous_action = self.action
+        self.previous_joint_velocities = self.joint_velocities()
         return obs, reward, done, truncated, {}
 
 # STEP 4: Setup the training session
@@ -303,13 +350,13 @@ async def main():
     env = VecMonitor(env) # Monitor the training progress
 
     # Define the ML model
-    batch_size = 10000
-    n_steps = 500
-    ent_coef = 0.0002
-    policy_kwargs = dict(activation_fn=torch.nn.ELU, net_arch=dict(pi=[256, 128, 64], vf=[256, 128, 64]))
+    batch_size = 5000
+    n_steps = 1000
+    ent_coef = 0.00003
+    policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 128, 64, 32], vf=[256, 128, 64, 32]))
     model = PPO(MlpPolicy, env, verbose=1, batch_size=batch_size, n_steps=n_steps, ent_coef=ent_coef, policy_kwargs=policy_kwargs, learning_rate=lr_schedule, tensorboard_log="./tensorboard/", device="cuda")
 
     # Start training!
-    model.learn(total_timesteps=100_000_000, callback=checkpoint_callback)
+    model.learn(total_timesteps=200_000_000, callback=checkpoint_callback)
 
 asyncio.run(main())
