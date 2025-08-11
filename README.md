@@ -57,62 +57,86 @@ The [prototwin gymnasium package](https://pypi.org/project/prototwin-gymnasium/)
 
 ## Examples
 
-### Cartpole V1
+### CartPole V1
 
 ProtoTwin single inverted pendulum (cartpole) tasked with swinging the pole up and balancing it.
 
-<img src="https://github.com/user-attachments/assets/ef6117c0-356e-498d-a78d-5cefa474f02e" alt="CartPoleV1" width="1000" />
+<p>
+  <img src="https://github.com/user-attachments/assets/ef6117c0-356e-498d-a78d-5cefa474f02e" alt="CartPoleV1" width="1000" style="margin-bottom: 50px;" />
+</p>
 
-To train the cartpole-v1 model you just need to run the following command:
+To train the cartpole-v1 model:
 ```
 cd cartpole-v1
 python cartpole-v1.py
 ```
 
-### Cartpole V2
+### CartPole V2
 
 ProtoTwin cartpole v2 has reduced acceleration in the cart and domain randomization compared to v1 (designed for sim-to-real).
 
-<img src="https://github.com/user-attachments/assets/51b73b06-10ff-4ede-9715-a0372c095cc2" alt="CartPoleV2" width="1000" />
+<p>
+  <img src="https://github.com/user-attachments/assets/51b73b06-10ff-4ede-9715-a0372c095cc2" alt="CartPoleV2" width="1000" />
+</p>
 
-To train the cartpole-v2 model you just need to run the following command:
+To train the cartpole-v2 model:
 ```
 cd cartpole-v2
 python cartpole-v2.py
 ```
 
-### Bipedal
+### Bipedal Robot
 
 ProtoTwin bipedal robot tasked with walking forward.
 
-<img src="https://github.com/user-attachments/assets/7c9b973f-2bd4-4dbb-8947-a962fb8ebf23" alt="Bipedal" width="1000" />
+<p>
+  <img src="https://github.com/user-attachments/assets/7c9b973f-2bd4-4dbb-8947-a962fb8ebf23" alt="Bipedal" width="1000" />
+</p>
 
-To train the bipedal model you just need to run the following command:
+To train the bipedal model:
 ```
 cd bipedal
 python bipedal.py
 ```
 
-### Handstand
+### Quadruped Robot Handstand
 
 Unitree Go2 quadruped robot tasked with performing a handstand.
 
-<img src="https://github.com/user-attachments/assets/6d6cad5f-826c-4385-8694-3a905b325127" alt="Handstand" width="1000" />
+<p>
+  <img src="https://github.com/user-attachments/assets/6d6cad5f-826c-4385-8694-3a905b325127" alt="Handstand" width="1000" />
+</p>
 
-To train the handstand model you just need to run the following command:
+To train the handstand model:
 ```
 cd handstand
 python handstand.py
 ```
 
-### PingPong
+### Robotic Ping Pong
 
-uFactory xArm 6 robot tasked with continuously bouncing a ping pong ball.
+uFactory xArm 6 robot tasked with bouncing a ping pong ball to the target height for as long as possible.
 
-<img src="https://github.com/user-attachments/assets/b8773a11-5505-4754-8703-030c6b92b8ef" alt="PingPong" width="1000" />
+<p>
+  <img src="https://github.com/user-attachments/assets/b8773a11-5505-4754-8703-030c6b92b8ef" alt="PingPong" width="1000" />
+</p>
 
-To train the pingpong model you just need to run the following command:
+To train the pingpong model:
 ```
 cd pingpong
 python pingpong.py
+```
+
+### Quadrotor Drone
+
+Quadrotor drone tasked with hovering to a randomly initialized target position marked by a yellow sphere.
+
+<p>
+  <img src="https://github.com/user-attachments/assets/a96540f0-d555-4818-af51-0b55756e6d62" alt="Quadrotor" width="1000" />
+</p>
+
+To train the quadrotor model:
+```
+cd quadrotor
+python quadrotor.py
 ```
