@@ -1,4 +1,5 @@
 # STEP 1: Import dependencies
+import os
 import asyncio
 import math
 import torch
@@ -97,8 +98,9 @@ class CartPoleEnv(VecEnvInstance):
 # STEP 4: Setup the training session
 async def main():
     # Launch ProtoTwin Connect and load the cartpole-v1 model
+    path = os.path.join(os.path.dirname(__file__), "cartpole-v1.ptm")
     client = await prototwin.start()
-    await client.load("cartpole-v1.ptm")
+    await client.load(path)
 
     # The observation space contains:
     # 0. A measure of the cart's distance from the center, where 0 is at the center and +/-1 is at the limit

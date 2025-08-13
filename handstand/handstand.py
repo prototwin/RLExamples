@@ -1,4 +1,5 @@
 # STEP 1: Import dependencies
+import os
 import asyncio
 import math
 import torch
@@ -299,8 +300,9 @@ class HandstandEnv(VecEnvInstance):
 # STEP 4: Setup the training session
 async def main():
     # Launch ProtoTwin Connect and load the handstand model
+    path = os.path.join(os.path.dirname(__file__), "handstand.ptm")
     client = await prototwin.start()
-    await client.load("handstand.ptm")
+    await client.load(path)
 
     observation_high = np.array([np.finfo(np.float32).max] * observation_size, dtype=np.float32)
     observation_space = gymnasium.spaces.Box(-observation_high, observation_high, dtype=np.float32)
