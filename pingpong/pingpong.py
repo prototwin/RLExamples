@@ -235,7 +235,7 @@ async def main():
 
     # Define learning rate schedule
     def lr_schedule(progress_remaining):
-        initial_lr = 0.003
+        initial_lr = 0.0003
         return initial_lr * (progress_remaining ** 2)
     
     # Create the vectorized environment
@@ -247,9 +247,9 @@ async def main():
     env = VecMonitor(env) # Monitor the training progress
 
     # Define the ML model
-    batch_size = 8000
-    n_steps = 4000
-    ent_coef = 0.0003
+    batch_size = 4000
+    n_steps = 2000
+    ent_coef = 0.00003
     policy_kwargs = dict(activation_fn=torch.nn.ReLU, net_arch=dict(pi=[256, 128, 64], vf=[256, 128, 64]))
     model = PPO(MlpPolicy, env, verbose=1, batch_size=batch_size, n_steps=n_steps, ent_coef=ent_coef, policy_kwargs=policy_kwargs, learning_rate=lr_schedule, tensorboard_log="./tensorboard/", device="cuda")
 
