@@ -79,7 +79,7 @@ class CartPoleEnv(VecEnvInstance):
         cart_velocity = self.get(cart_motor_current_velocity) # Read the current velocity of the cart
         pole_angular_velocity = self.get(pole_motor_current_velocity) # Read the current angular velocity of the pole
         pole_angular_distance = self.get(pole_motor_current_position) # Read the current angular distance of the pole
-        return np.array([self.normalize_position(cart_position), self.normalize_angle(pole_angular_distance) / math.pi, cart_velocity, pole_angular_velocity])
+        return np.array([self.normalize_position(cart_position), self.normalize_angle(pole_angular_distance), cart_velocity, pole_angular_velocity])
 
     def reset(self, seed = None):
         super().reset(seed=seed)
